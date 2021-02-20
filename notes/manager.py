@@ -4,32 +4,24 @@ from pathlib import Path
 from typing import Tuple
 
 from notes import markdown
-from notes.file import NoteFile
+from notes.structure import StructuredNotes
 
 
 class NoteManager:
     def __init__(self, path: Path):
         self.path = path
-        self.notes = NoteFile(path)
+        self.path.touch(exist_ok=True)
+        self._parser = Markdown()
+        self._formater = self._parser
 
     def new_entry(self, title: str, timestamp: datetime) -> int:
-        """
-        Add a new entry to notes, and return the line position of the new entry
+        notes = self._parser.parse(self.path.read_text("utf-8"))
+        notes.add_entry(title=title, timestamp=timestamp)
+        self.write(notes)
 
-        :param title str: title for the new entry
-        :param timestamp datetime: timestamp for the new entry
-        :return int: the line position for the new entry in the notes file
-        """
-
-        lines = [markdown.format_entry(title, timestamp)]
-
-        # check if todays date is already in the file
-        if not self._find_entry_for_timestamp(timestamp)[1]:
-            lines.insert(0, markdown.format_date(timestamp))
-
-        position = self._find_latest_position(timestamp)
+    def write(self, notes: StructuredNotes):
         self.backup()
-        return self.notes.write("\n".join(lines) + "\n", position)
+        self.path.write_text(self._formater.format(notes), "utf-8")
 
     def backup(self) -> Path:
         backup_dir = self.path.parent / ".backups"
