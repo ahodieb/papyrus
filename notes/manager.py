@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
 
-from notes import markdown
+from notes import editors, markdown
 from notes.file import NoteFile
 
 
@@ -14,7 +14,7 @@ class NoteManager:
 
     def new_entry(self, title: str, timestamp: datetime) -> int:
         """
-        Add a new entry to notes, and return the line position of the new entry
+        add a new entry to notes, and return the line position of the new entry
 
         :param title str: title for the new entry
         :param timestamp datetime: timestamp for the new entry
@@ -25,13 +25,23 @@ class NoteManager:
 
         # check if todays date is already in the file
         if not self._find_entry_for_timestamp(timestamp)[1]:
-            lines.insert(0, markdown.format_date(timestamp))
+            lines.insert(0, markdown.format_date(timestamp) + "\n")
 
         position = self._find_latest_position(timestamp)
         self.backup()
         return self.notes.write("\n".join(lines) + "\n", position)
 
+    def open(self, editor: str, position: int):
+        """
+        open notes in an editor at the specified position
+
+        :param editor str: the editor to use for opening the notes
+        :param position int: the position to open the editor at
+        """
+        editors.open(editor, str(self.path), position)
+
     def backup(self) -> Path:
+        """backup the notes file"""
         backup_dir = self.path.parent / ".backups"
         backup_dir.mkdir(exist_ok=True)
         backup_path = backup_dir / datetime.utcnow().strftime("%Y%m%dT%H%M%S.txt")
@@ -43,9 +53,7 @@ class NoteManager:
 
     def _find_latest_position(self, timestamp: datetime) -> int:
         """
-        Ported the logic from my original bash scripts
-
-        Try to look for the entry from the day before, and append the new entry two lines above it
+        try to look for the entry from the day before, and append the new entry two lines above it
         if no entry was found (e.g. after the weekend or a vacation) find the latest entry instead
 
         There is an edge case when there is only one entry in the file for today (e.g. first day of the month)
@@ -60,5 +68,6 @@ class NoteManager:
         return position - 1 if position >= 1 else 0
 
     def _find_entry_for_timestamp(self, timestamp: datetime) -> Tuple[int, bool]:
+        """find the position of a specific timestamp"""
         formatted = markdown.format_date(timestamp)
         return self.notes.find(lambda line: formatted in line)

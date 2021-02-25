@@ -9,7 +9,8 @@ from typing import List, Optional
 
 from notes.manager import NoteManager
 
-_NOTES_FILE_ENV = "JOURNAL_FILE"
+ENV_NOTES_FILE = "JOURNAL_FILE"
+ENV_EDITOR = "NOTES_EDITOR"
 
 
 def default_command(args: List[str]):
@@ -21,16 +22,18 @@ def default_command(args: List[str]):
     2. if the clipboard checking rules match the text in clipboard it adds a new entry with specific structure
     """
 
-    _new_entry(_get_path(), datetime.now(), " ".join(args))
+    notes = NoteManager(_get_path())
+    position = notes.new_entry(" ".join(args), timestamp=datetime.now())
+    notes.open(editor(), position)
 
 
 def new_entry_command(args: argparse.Namespace, remaining: List[str]):
-    _new_entry(_get_path(args), datetime.now(), " ".join(remaining))
+    notes = NoteManager(_get_path(args))
+    notes.new_entry(" ".join(remaining), timestamp=datetime.now())
 
 
-def _new_entry(path: Path, timestamp: datetime, line: str):
-    notes = NoteManager(path)
-    notes.new_entry(line, timestamp=timestamp)
+def editor() -> str:
+    return os.environ.get(ENV_EDITOR, os.environ.get("EDITOR", "vim"))
 
 
 def _get_path(args: Optional[argparse.Namespace] = None) -> Path:
@@ -39,7 +42,7 @@ def _get_path(args: Optional[argparse.Namespace] = None) -> Path:
     if args:
         path = args.path
     else:
-        path = os.environ[_NOTES_FILE_ENV]
+        path = os.environ[ENV_NOTES_FILE]
 
     if not path or Path(path).is_dir():
         raise FileNotFoundError("Path not specified, use --path or set JOURNAL_FILE environment variable")

@@ -21,6 +21,10 @@ def parser() -> ArgumentParser:
 
     new_entry = sub.add_parser("new", help="add new entry to note")
     new_entry.set_defaults(func=commands.new_entry_command)
+
+    open_editor = sub.add_parser("open", help="open editor on the latest entry")
+    open_editor.add_argument("--editor", help="editor to open", default=os.environ["NOTES_EDITOR"])
+    open_editor.set_defaults(func=commands.open_to_latest_entry_command)
     return parser
 
 

@@ -9,7 +9,6 @@ Note taking cli tools that i use daily to keep track of my work
 ### Functional Requirements
 
 * [ ] round time to 5 minute blocks ?
-* [ ] open editor to last entry position
 * [ ] generate weekly status
 * [ ] time spent breakdown
 * [ ] close off the past entry timestamp
