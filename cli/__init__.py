@@ -29,9 +29,10 @@ def parse(args: Optional[List[str]] = sys.argv[1:]) -> Callable[[], Any]:
     try to parse args (default sys.argv) if parsing fails, it returns commands.default_command
     """
     try:
-        parsed, remaining = parser().parse_known_args(
-            args=args,
-        )
+        parsed, remaining = parser().parse_known_args(args=args)
+        if parsed.func is commands.default_command:
+            return partial(commands.default_command, remaining)
+
         return partial(parsed.func, parsed, remaining)
     except argparse.ArgumentError:
         return partial(commands.default_command, args)
