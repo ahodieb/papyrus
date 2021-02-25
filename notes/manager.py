@@ -57,7 +57,7 @@ class NoteManager:
         if not found:
             position, found = self.notes.find(lambda line: markdown.DATE_PATTERN.match(line))
 
-        return position - 2 if position >= 2 else 0
+        return position - 1 if position >= 1 else 0
 
     def _find_entry_for_timestamp(self, timestamp: datetime) -> Tuple[int, bool]:
         formatted = markdown.format_date(timestamp)
