@@ -72,3 +72,6 @@ class NoteFile:
         """
 
         return filter(lambda x: matcher(x[1]), self.enumerate())
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self.read())

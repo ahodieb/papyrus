@@ -27,6 +27,11 @@ def default_command(args: List[str]):
     notes.open(editor(), position)
 
 
+def open_to_latest_entry_command(args: argparse.Namespace, remaining: List[str]):
+    notes = NoteManager(_get_path(args))
+    notes.open_latest_entry(editor(), timestamp=datetime.now())
+
+
 def new_entry_command(args: argparse.Namespace, remaining: List[str]):
     notes = NoteManager(_get_path(args))
     notes.new_entry(" ".join(remaining), timestamp=datetime.now())
