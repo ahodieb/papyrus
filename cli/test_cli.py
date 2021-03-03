@@ -10,6 +10,7 @@ def test_parse_default_command():
 
     assert isinstance(command, partial)
     assert command.func is commands.default_command
+    assert command.args[-1] == args
 
 
 def test_parse_empty():
@@ -19,8 +20,10 @@ def test_parse_empty():
     assert command.func is commands.default_command
 
 
-def test_parse_new(tmp_path):
-    command = cli.parse(["new", "-p", f"{tmp_path}/notes.txt", "free", "text"])
+def test_parse_new():
+    args = ["new", "free", "text", "items"]
+    command = cli.parse(args)
 
     assert isinstance(command, partial)
     assert command.func is commands.new_entry_command
+    assert command.args[-1] == args[1:]
