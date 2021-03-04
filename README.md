@@ -9,6 +9,8 @@ Note taking cli tools that i use daily to keep track of my work
 ### Functional Requirements
 
 * [ ] round time to 5 minute blocks ?
+* [ ] add tags automatically to words
+  * [ ] extension/rules system
 * [ ] write new today sentence (today)
 * [ ] generate weekly status
 * [ ] time spent breakdown
