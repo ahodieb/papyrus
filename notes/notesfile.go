@@ -1,4 +1,4 @@
-package journal
+package notes
 
 import (
 	"bufio"
@@ -6,23 +6,23 @@ import (
 	"time"
 )
 
-type Journal struct {
+type NotesFile struct {
 	Path  string
 	Lines []string
 }
 
-// Read all lines in file
-func Read(p string) (Journal, error) {
-	err := createIfIsNotExist(p)
+// Read all lines in file if exists, or create a new empty one
+func ReadOrCreate(path string) (NotesFile, error) {
+	err := createIfIsNotExist(path)
 	if err != nil {
-		return Journal{}, err
+		return NotesFile{}, err
 	}
 
-	file, err := os.Open(p)
+	file, err := os.Open(path)
 	defer file.Close()
 
 	if err != nil {
-		return Journal{}, err
+		return NotesFile{}, err
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -33,7 +33,7 @@ func Read(p string) (Journal, error) {
 		lines = append(lines, scanner.Text())
 	}
 
-	return Journal{Path: p, Lines: lines}, nil
+	return NotesFile{Path: path, Lines: lines}, nil
 }
 
 func createIfIsNotExist(p string) error {
@@ -47,10 +47,10 @@ func createIfIsNotExist(p string) error {
 }
 
 // Find the latest entry in the Journal file
-func (j *Journal) FindPosition(t time.Time) int {
+func (f *NotesFile) FindPosition(t time.Time) int {
 
 	// Looks for the latest entry before the current day entry, and get the position two lines above it
-	position, found := j.positionBefore(t)
+	position, found := f.positionBefore(t)
 	if found {
 		if position > 1 {
 			return position - 1
@@ -63,14 +63,14 @@ func (j *Journal) FindPosition(t time.Time) int {
 	// This could happen if there is only one entry in the file, or change of formats
 	// If none were found that means either its an empty file or formats are not recognized
 	// and it will default back to the 0th position
-	position, _ = j.positionOn(t)
+	position, _ = f.positionOn(t)
 	return position
 }
 
-func (j *Journal) positionOn(t time.Time) (int, bool) {
+func (f *NotesFile) positionOn(t time.Time) (int, bool) {
 	return 3, true
 }
 
-func (j *Journal) positionBefore(t time.Time) (int, bool) {
+func (f *NotesFile) positionBefore(t time.Time) (int, bool) {
 	return 0, false
 }

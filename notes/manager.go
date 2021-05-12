@@ -1,4 +1,4 @@
-package journal
+package notes
 
 import (
 	"time"
@@ -8,12 +8,12 @@ import (
 
 // TOOD better name ?
 type Manager struct {
-	Journal Journal
-	Editor  editor.EditorOpener
+	Notes  NotesFile
+	Editor editor.EditorOpener
 }
 
 func (m *Manager) Open() error {
 	now := time.Now().UTC()
-	position := m.Journal.FindPosition(now)
-	return m.Editor.Open(m.Journal.Path, position)
+	position := m.Notes.FindPosition(now)
+	return m.Editor.Open(m.Notes.Path, position)
 }

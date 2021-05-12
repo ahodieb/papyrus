@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/ahodieb/papyrus/editor"
-	"github.com/ahodieb/papyrus/journal"
+	"github.com/ahodieb/papyrus/notes"
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -60,16 +60,16 @@ func initConfig() {
 	}
 }
 
-func NewManager(cmd *cobra.Command, args []string) (journal.Manager, error) {
+func NewManager(cmd *cobra.Command, args []string) (notes.Manager, error) {
 	file, _ := cmd.Flags().GetString(JOURNAL_FILE)
 	editorName, _ := cmd.Flags().GetString(EDITOR)
-	j, err := journal.Read(file)
+	n, err := notes.ReadOrCreate(file)
 	if err != nil {
-		return journal.Manager{}, err
+		return notes.Manager{}, err
 	}
 
-	return journal.Manager{
-		Editor:  editor.ByName(editorName),
-		Journal: j,
+	return notes.Manager{
+		Editor: editor.ByName(editorName),
+		Notes:  n,
 	}, nil
 }
