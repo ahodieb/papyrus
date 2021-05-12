@@ -3,7 +3,7 @@ package notes
 import (
 	"bufio"
 	"os"
-	"time"
+	"strings"
 )
 
 type NotesFile struct {
@@ -36,6 +36,25 @@ func ReadOrCreate(path string) (NotesFile, error) {
 	return NotesFile{Path: path, Lines: lines}, nil
 }
 
+// Find line containing specified substring
+func (n *NotesFile) FindContaining(s string) (int, bool) {
+	var finder LineFinder = func(line string) bool { return strings.Contains(line, s) }
+	return n.Find(finder)
+}
+
+type LineFinder func(line string) bool
+
+// Find line matched by specified finder
+func (n *NotesFile) Find(finder LineFinder) (int, bool) {
+	for i, line := range n.Lines {
+		if finder(line) {
+			return i, true
+		}
+	}
+
+	return 0, false
+}
+
 func createIfIsNotExist(p string) error {
 	_, err := os.Stat(p)
 	if os.IsNotExist(err) {
@@ -44,33 +63,4 @@ func createIfIsNotExist(p string) error {
 	}
 
 	return err
-}
-
-// Find the latest entry in the Journal file
-func (f *NotesFile) FindPosition(t time.Time) int {
-
-	// Looks for the latest entry before the current day entry, and get the position two lines above it
-	position, found := f.positionBefore(t)
-	if found {
-		if position > 1 {
-			return position - 1
-		}
-
-		return 0
-	}
-
-	// If no later entry found look for the current day entry,
-	// This could happen if there is only one entry in the file, or change of formats
-	// If none were found that means either its an empty file or formats are not recognized
-	// and it will default back to the 0th position
-	position, _ = f.positionOn(t)
-	return position
-}
-
-func (f *NotesFile) positionOn(t time.Time) (int, bool) {
-	return 3, true
-}
-
-func (f *NotesFile) positionBefore(t time.Time) (int, bool) {
-	return 0, false
 }

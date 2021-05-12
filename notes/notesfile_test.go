@@ -4,11 +4,31 @@ import (
 	"os"
 	"path"
 	"reflect"
-	"time"
 
-	// "reflect"
 	"testing"
 )
+
+func TestFindContains(t *testing.T) {
+	n := NotesFile{
+		Lines: []string{"line1", "line2", "line3"},
+	}
+	want := 1
+
+	got, found := n.FindContaining("line2")
+	if got != 1 || !found {
+		t.Errorf("Wanted %d, Got %d", want, got)
+	}
+
+	got, _ = n.FindContaining("ne2")
+	if got != 1 || !found {
+		t.Errorf("Wanted %d, Got %d", want, got)
+	}
+
+	_, found = n.FindContaining("line5")
+	if found {
+		t.Error("Wanted false, Got true")
+	}
+}
 
 func TestReadOrCreate_CreatesNewFileIfExists(t *testing.T) {
 	f := path.Join(t.TempDir(), "temp-file.txt")
@@ -28,31 +48,6 @@ func TestReadOrCreate_ReadsFile(t *testing.T) {
 	got, _ := ReadOrCreate(p)
 	if !reflect.DeepEqual(got.Lines, want) {
 		t.Errorf("Wanted %v, got %v", want, got.Lines)
-	}
-}
-
-func TestPositionOn_GetsPosition(t *testing.T) {
-	lines := []string{
-		"### Thu 2021/05/13",
-		"Entry 3",
-		"",
-		"### Wed 2021/05/12",
-		"Entry 2",
-		"",
-		"### Tue 2021/05/11",
-		"Entry 1",
-		"",
-	}
-
-	n := NotesFile{
-		Lines: lines,
-	}
-
-	d := time.Date(2021, 5, 12, 0, 0, 0, 0, time.UTC)
-	want := 4
-	got, _ := n.positionOn(d)
-	if got != want {
-		t.Errorf("Wanted %d got %d", want, got)
 	}
 }
 
