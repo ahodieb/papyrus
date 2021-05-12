@@ -15,7 +15,7 @@ var openCmd = &cobra.Command{
 			return err
 		}
 
-		return m.Open()
+		return m.OpenLatest()
 	},
 }
 

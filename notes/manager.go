@@ -1,12 +1,12 @@
 package notes
 
 import (
-	"fmt"
+	"regexp"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/ahodieb/papyrus/editor"
-	"github.com/ahodieb/papyrus/notes/markdown"
 )
 
 type Manager struct {
@@ -14,11 +14,13 @@ type Manager struct {
 	Editor editor.EditorOpener
 }
 
-func (m *Manager) Open() error {
-	now := time.Now().UTC()
-	position := m.FindPosition(now)
+// Open notes file in the editor at the end of the latest time entry
+func (m *Manager) OpenLatest() error {
+	return m.Editor.Open(m.Notes.Path, m.FindPosition(time.Now()))
+}
 
-	fmt.Println(position)
+// Open notes file in the editor at the specified position
+func (m *Manager) Open(position int) error {
 	return m.Editor.Open(m.Notes.Path, position)
 }
 
@@ -44,12 +46,12 @@ func (m *Manager) FindPosition(t time.Time) int {
 }
 
 func (m *Manager) positionOn(t time.Time) (int, bool) {
-	return m.Notes.FindContaining(markdown.FormatDate(t))
+	return m.Notes.FindContaining(FormatDate(t))
 }
 
 func (m *Manager) positionBefore(t time.Time) (int, bool) {
 
-	for _, e := range m.TimeEntries() {
+	for _, e := range m.Entries() {
 		if e.Time.Before(t) {
 			return e.Position, true
 		}
@@ -58,26 +60,45 @@ func (m *Manager) positionBefore(t time.Time) (int, bool) {
 	return 0, false
 }
 
-type TimeEntryPosition struct {
+type Entry struct {
 	Position int
 	Time     time.Time
+	Content  []string
 }
 
-func (m *Manager) TimeEntries() []TimeEntryPosition {
-	var positions []TimeEntryPosition
+func (m *Manager) Entries() []Entry {
+	var entries []Entry
 
 	for i, line := range m.Notes.Lines {
-		if markdown.DATE_PATTERN.MatchString(line) {
-			t, err := markdown.ParseDate(line)
+		if DATE_PATTERN.MatchString(line) {
+			t, err := ParseDate(line)
 			if err == nil {
-				positions = append(positions, TimeEntryPosition{Position: i, Time: t})
+				entries = append(entries, Entry{Position: i, Time: t})
 			}
 		}
 	}
 
-	sort.Slice(positions, func(i, j int) bool {
-		return positions[i].Time.After(positions[j].Time)
+	for i, entry := range entries {
+		if i+1 >= len(entries) {
+			entries[i].Content = m.Notes.Lines[entry.Position:]
+		} else {
+			entries[i].Content = m.Notes.Lines[entry.Position:entries[i+1].Position]
+		}
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Time.After(entries[j].Time)
 	})
 
-	return positions
+	return entries
+}
+
+var DATE_PATTERN, _ = regexp.Compile("### [a-zA-Z]{3} (?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})")
+
+func FormatDate(t time.Time) string {
+	return t.Format("### Mon 2006/01/02")
+}
+
+func ParseDate(s string) (time.Time, error) {
+	return time.Parse("### Mon 2006/01/02", strings.TrimSpace(s))
 }
