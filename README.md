@@ -8,9 +8,9 @@ Note taking cli tools that i use daily to keep track of my work
 
 ### Go implementation
 
-* [ ] port the testing suite
-* [ ] Implement the time format logic
-* [ ] Implement the find position methods
+* [x] port the testing suite
+* [x] Implement the time format logic
+* [x] Implement the find position methods
 * [ ] Configure viper/defaults to get journal file and editor from config or env variables
 * [ ] Wire the root command to do the auto magic detection logic
 * [ ] Install papyrus binary into bin instead of the python one
