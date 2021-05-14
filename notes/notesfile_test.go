@@ -1,6 +1,7 @@
 package notes
 
 import (
+	"bytes"
 	"os"
 	"path"
 	"reflect"
@@ -9,11 +10,9 @@ import (
 )
 
 func TestFindContains(t *testing.T) {
-	n := NotesFile{
-		Lines: []string{"line1", "line2", "line3"},
-	}
-	want := 1
+	n := NotesFile{Lines: []string{"line1", "line2", "line3"}}
 
+	want := 1
 	got, found := n.FindContaining("line2")
 	if got != 1 || !found {
 		t.Errorf("Wanted %d, Got %d", want, got)
@@ -30,29 +29,64 @@ func TestFindContains(t *testing.T) {
 	}
 }
 
-func TestReadOrCreate_CreatesNewFileIfExists(t *testing.T) {
-	f := path.Join(t.TempDir(), "temp-file.txt")
-	defer os.Remove(f)
-
-	ReadOrCreate(f)
-
-	if _, err := os.Stat(f); os.IsNotExist(err) {
-		t.Error("New notes file was not created")
-	}
-}
-
-func TestReadOrCreate_ReadsFile(t *testing.T) {
+func TestFromFile_ReadsFile(t *testing.T) {
 	want := []string{"line1", "line2"}
-	p := tempFileWithContent(t, want)
+	p := writeToTempFile(t, want)
 
-	got, _ := ReadOrCreate(p)
+	got := ReadFromFile(p)
 	if !reflect.DeepEqual(got.Lines, want) {
-		t.Errorf("Wanted %v, got %v", want, got.Lines)
+		t.Errorf("Wanted %q, got %q", want, got.Lines)
 	}
 }
 
-func tempFileWithContent(t *testing.T, content []string) string {
-	p := path.Join(t.TempDir(), "temp-file.txt")
+func TestSaveWithBackup(t *testing.T) {
+	n := NotesFile{
+		Path:  path.Join(t.TempDir(), "notes-file.txt"),
+		Lines: []string{"line1", "line2"},
+	}
+
+	bkp, err := n.SaveWithBackup()
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := "line1\nline2\n"
+	got, _ := os.ReadFile(n.Path)
+
+	if string(got) != want {
+		t.Errorf("Wanted %q, Got %q", want, got)
+	}
+
+	compareFiles(t, n.Path, bkp)
+}
+
+func TestBackup(t *testing.T) {
+	want := []string{"line1", "line2"}
+	path := writeToTempFile(t, want)
+	note := ReadFromFile(path)
+	bkp, _ := note.Backup()
+
+	compareFiles(t, note.Path, bkp)
+}
+
+func compareFiles(t *testing.T, f1 string, f2 string) {
+	c1, err := os.ReadFile(f1)
+	if err != nil {
+		t.Fatalf("Failed to read %s, %v", f1, err)
+	}
+
+	c2, err := os.ReadFile(f1)
+	if err != nil {
+		t.Fatalf("Failed to read %s, %v", f2, err)
+	}
+
+	if bytes.Compare(c1, c2) != 0 {
+		t.Errorf("Contents of %s: %q is not equal to contents of %s %q", f1, c1, f2, c2)
+	}
+}
+
+func writeToTempFile(t *testing.T, content []string) string {
+	p := path.Join(os.TempDir(), "temp-file.txt")
 	f, err := os.Create(p)
 	defer f.Close()
 	if err != nil {

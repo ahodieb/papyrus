@@ -63,13 +63,9 @@ func initConfig() {
 func NewManager(cmd *cobra.Command, args []string) (notes.Manager, error) {
 	file, _ := cmd.Flags().GetString(JOURNAL_FILE)
 	editorName, _ := cmd.Flags().GetString(EDITOR)
-	n, err := notes.ReadOrCreate(file)
-	if err != nil {
-		return notes.Manager{}, err
-	}
 
 	return notes.Manager{
 		Editor: editor.ByName(editorName),
-		Notes:  n,
+		Notes:  notes.ReadFromFile(file),
 	}, nil
 }
