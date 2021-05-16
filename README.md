@@ -12,10 +12,11 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] Implement the time format logic
 * [x] Implement the find position methods
 * [x] Implement backup logic
-* [ ] Configure viper/defaults to get journal file and editor from config or env variables
+* [x] Configure viper/defaults to get journal file and editor from config or env variables
 * [ ] Wire the root command to do the auto magic detection logic
 * [ ] Install papyrus binary into bin instead of the python one
 * [ ] Make script
+* [ ] Refactor Cli and possibly find a better approach than static/global variables
 
 ### Functional Requirements
 
