@@ -4,6 +4,7 @@
 
 Note taking cli tools that i use daily to keep track of my work
 
+
 ## TODO
 
 ### Go implementation
@@ -13,13 +14,15 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] Implement the find position methods
 * [x] Implement backup logic
 * [x] Configure viper/defaults to get journal file and editor from config or env variables
-* [ ] Wire the root command to do the auto magic detection logic
-* [ ] Install papyrus binary into bin instead of the python one
+* [x] Install papyrus binary into bin instead of the python one
+* [x] Wire the root command to open notes
+* [ ] Implement add new section logic
 * [ ] Make script
 * [ ] Refactor Cli and possibly find a better approach than static/global variables
 
 ### Functional Requirements
 
+* [ ] Wire the root command to do the auto magic detection logic
 * [ ] round time to 5 minute blocks ?
 * [ ] add tags automatically to words
   * [ ] extension/rules system

@@ -30,6 +30,10 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   APP_NAME,
 	Short: "Tools to automate note taking workflow",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		m := NewManager(cmd, args)
+		return m.OpenLatest()
+	},
 }
 
 func Execute() {
@@ -61,7 +65,7 @@ func initConfig() {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix(CONFIG_ENV_PREFIX)
 
-	if err := viper.ReadInConfig(); err == nil {
+	if err := viper.ReadInConfig(); err != nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
@@ -69,12 +73,12 @@ func initConfig() {
 }
 
 func NewManager(cmd *cobra.Command, args []string) notes.Manager {
-	file := getJournalFile()
+	file := getJournalFile(cmd)
 	// FIXME do some default behavior
 	if file == "" {
 		cobra.CheckErr(fmt.Errorf("%q not specified", F_JOURNAL_FILE))
 	}
-	editorName := getEditor()
+	editorName := getEditor(cmd)
 
 	editorName, err := cmd.Flags().GetString(F_EDITOR)
 	cobra.CheckErr(err)
@@ -111,10 +115,10 @@ func getStringFlag(f string, cmd *cobra.Command) string {
 	return cmd.Flags().Lookup(f).Value.String()
 }
 
-func getEditor() string {
-	return getStringFlag(F_EDITOR, rootCmd)
+func getEditor(cmd *cobra.Command) string {
+	return getStringFlag(F_EDITOR, cmd)
 }
 
-func getJournalFile() string {
-	return getStringFlag(F_JOURNAL_FILE, rootCmd)
+func getJournalFile(cmd *cobra.Command) string {
+	return getStringFlag(F_JOURNAL_FILE, cmd)
 }
