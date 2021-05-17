@@ -9,33 +9,21 @@ import (
 	"testing"
 )
 
-func TestFindContaining(t *testing.T) {
+func TestReadFromFile(t *testing.T) {
 	tests := []struct {
-		lines []string
-		term  string
-		index int
-		found bool
+		path string
+		want []string
 	}{
-		{[]string{"line1", "line2", "line3"}, "line2", 1, true},
-		{[]string{"line1", "line2", "line3"}, "ne2", 1, true},
-		{[]string{"line1", "line2", "line3"}, "line5", 0, false},
+		{tmpFileWithContent(t, "line1", "line2"), []string{"line1", "line2"}},
+		{"does-not-exist.txt", nil},
+		{"", nil},
 	}
 
 	for _, tt := range tests {
-		n := NotesFile{Lines: tt.lines}
-		if index, found := n.FindContains(tt.term); index != tt.index || found != tt.found {
-			t.Errorf("n.FindContains(%q) = (%d, %t) want (%d, %t)", tt.term, index, found, tt.index, tt.found)
+		n := ReadFromFile(tt.path)
+		if !reflect.DeepEqual(n.Lines, tt.want) {
+			t.Errorf("Expected %q, got %q", tt.want, n.Lines)
 		}
-	}
-}
-
-func TestFromFile_ReadsFile(t *testing.T) {
-	want := []string{"line1", "line2"}
-	p := writeToTempFile(t, want)
-
-	got := ReadFromFile(p)
-	if !reflect.DeepEqual(got.Lines, want) {
-		t.Errorf("Wanted %q, got %q", want, got.Lines)
 	}
 }
 
@@ -62,7 +50,7 @@ func TestSaveWithBackup(t *testing.T) {
 
 func TestBackup(t *testing.T) {
 	want := []string{"line1", "line2"}
-	path := writeToTempFile(t, want)
+	path := tmpFileWithContent(t, want...)
 	note := ReadFromFile(path)
 	bkp, err := note.Backup()
 	if err != nil {
@@ -72,35 +60,24 @@ func TestBackup(t *testing.T) {
 	compareFiles(t, note.Path, bkp)
 }
 
-func compareFiles(t *testing.T, f1 string, f2 string) {
-	c1, err := os.ReadFile(f1)
-	if err != nil {
-		t.Fatalf("Failed to read %s, %v", f1, err)
+func TestFindContaining(t *testing.T) {
+	tests := []struct {
+		lines []string
+		term  string
+		index int
+		found bool
+	}{
+		{[]string{"line1", "line2", "line3"}, "line2", 1, true},
+		{[]string{"line1", "line2", "line3"}, "ne2", 1, true},
+		{[]string{"line1", "line2", "line3"}, "line5", 0, false},
 	}
 
-	c2, err := os.ReadFile(f2)
-	if err != nil {
-		t.Fatalf("Failed to read %s, %v", f2, err)
+	for _, tt := range tests {
+		n := NotesFile{Lines: tt.lines}
+		if index, found := n.FindContains(tt.term); index != tt.index || found != tt.found {
+			t.Errorf("n.FindContains(%q) = (%d, %t) want (%d, %t)", tt.term, index, found, tt.index, tt.found)
+		}
 	}
-
-	if bytes.Compare(c1, c2) != 0 {
-		t.Errorf("Contents of %s: %q is not equal to contents of %s %q", f1, c1, f2, c2)
-	}
-}
-
-func writeToTempFile(t *testing.T, content []string) string {
-	p := path.Join(os.TempDir(), "temp-file.txt")
-	f, err := os.Create(p)
-	defer f.Close()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, line := range content {
-		_, _ = f.WriteString(line + "\n")
-	}
-
-	return p
 }
 
 var InsertTests = []struct {
@@ -133,5 +110,36 @@ func TestInsertStrings(t *testing.T) {
 		if got := insertString(tt.dst, tt.index, tt.values...); !reflect.DeepEqual(got, tt.want) {
 			t.Errorf("insertString(%v, %d, %v) = %v; want %v", tt.dst, tt.index, tt.values, got, tt.want)
 		}
+	}
+}
+
+func tmpFileWithContent(t *testing.T, content ...string) string {
+	p := path.Join(t.TempDir(), "temp-file.txt")
+	f, err := os.Create(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	for _, line := range content {
+		_, _ = f.WriteString(line + "\n")
+	}
+
+	return p
+}
+
+func compareFiles(t *testing.T, f1 string, f2 string) {
+	b1, err := os.ReadFile(f1)
+	if err != nil {
+		t.Fatalf("Failed to read %q, %v", f1, err)
+	}
+
+	b2, err := os.ReadFile(f2)
+	if err != nil {
+		t.Fatalf("Failed to read %q, %v", f2, err)
+	}
+
+	if !bytes.Equal(b1, b2) {
+		t.Errorf("Contens of %q and %q are different\n%q\n%q", f1, f2, b1, b2)
 	}
 }
