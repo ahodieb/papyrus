@@ -106,7 +106,8 @@ func (n *NotesFile) Backup() (string, error) {
 	}
 
 	path := path.Join(filepath.Dir(n.Path), ".backups", time.Now().UTC().Format("20060102-0304.txt"))
-	os.MkdirAll(path, os.ModePerm)
+	os.MkdirAll(filepath.Dir(path), os.ModePerm)
+
 	destination, err := os.Create(path)
 	if err != nil {
 		return "", fmt.Errorf("Backup failed, could not create backup file: %s, %s", path, err)

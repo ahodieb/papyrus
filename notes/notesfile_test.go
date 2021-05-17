@@ -64,7 +64,10 @@ func TestBackup(t *testing.T) {
 	want := []string{"line1", "line2"}
 	path := writeToTempFile(t, want)
 	note := ReadFromFile(path)
-	bkp, _ := note.Backup()
+	bkp, err := note.Backup()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	compareFiles(t, note.Path, bkp)
 }
@@ -75,7 +78,7 @@ func compareFiles(t *testing.T, f1 string, f2 string) {
 		t.Fatalf("Failed to read %s, %v", f1, err)
 	}
 
-	c2, err := os.ReadFile(f1)
+	c2, err := os.ReadFile(f2)
 	if err != nil {
 		t.Fatalf("Failed to read %s, %v", f2, err)
 	}
