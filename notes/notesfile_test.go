@@ -102,3 +102,36 @@ func writeToTempFile(t *testing.T, content []string) string {
 
 	return p
 }
+
+var InsertTests = []struct {
+	dst    []string
+	index  int
+	values []string
+	want   []string
+}{
+	{[]string{"line1", "line2"}, 1, []string{"line3", "line4"}, []string{"line1", "line3", "line4", "line2"}},
+	{[]string{"line1", "line2"}, -1, []string{"line3", "line4"}, []string{"line3", "line4", "line1", "line2"}},
+	{[]string{"line1", "line2"}, 0, []string{"line3", "line4"}, []string{"line3", "line4", "line1", "line2"}},
+	{[]string{"line1", "line2"}, 2, []string{"line3", "line4"}, []string{"line1", "line2", "line3", "line4"}},
+	{[]string{"line1", "line2"}, 5, []string{"line3", "line4"}, []string{"line1", "line2", "line3", "line4"}},
+	{[]string{"line1", "line2"}, 0, nil, []string{"line1", "line2"}},
+	{[]string{}, 0, []string{"line1", "line2"}, []string{"line1", "line2"}},
+}
+
+func TestInsert(t *testing.T) {
+	for _, tt := range InsertTests {
+		n := NotesFile{Lines: tt.dst}
+		n.Insert(tt.values, tt.index)
+		if !reflect.DeepEqual(n.Lines, tt.want) {
+			t.Errorf("n.Insert(%v, %d); n.Lines = %v; want %v", tt.values, tt.index, n.Lines, tt.want)
+		}
+	}
+}
+
+func TestInsertStrings(t *testing.T) {
+	for _, tt := range InsertTests {
+		if got := insertString(tt.dst, tt.index, tt.values...); !reflect.DeepEqual(got, tt.want) {
+			t.Errorf("insertString(%v, %d, %v) = %v; want %v", tt.dst, tt.index, tt.values, got, tt.want)
+		}
+	}
+}

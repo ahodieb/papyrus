@@ -39,6 +39,30 @@ func readLines(path string) []string {
 	return lines
 }
 
+// Insert lines line containing specified substring
+func (n *NotesFile) Insert(lines []string, position int) int {
+	n.Lines = insertString(n.Lines, position, lines...)
+	return position + len(lines)
+}
+
+// insertString inserts strings inside a string slice  at the specified position
+// TODO: this is a generally useful function, i imagine i'll use it again, might pull it up in a different package
+func insertString(dst []string, index int, s ...string) []string {
+	if index >= len(dst) {
+		return append(dst, s...)
+	}
+
+	if index <= 0 {
+		return append(s, dst...)
+	}
+
+	a := make([]string, len(dst)+len(s)) // Allocate a new slice with new size
+	copy(a, dst[:index])                 // Copy the first part of the original slice
+	copy(a[index:], s)                   // Insert the strings at the specified position
+	copy(a[index+len(s):], dst[index:])  // Copy the remaining of the original slice
+	return a
+}
+
 // Find line containing specified substring
 func (n *NotesFile) FindContaining(s string) (int, bool) {
 	var finder LineFinder = func(line string) bool { return strings.Contains(line, s) }
