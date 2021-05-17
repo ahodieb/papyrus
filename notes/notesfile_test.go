@@ -9,23 +9,23 @@ import (
 	"testing"
 )
 
-func TestFindContains(t *testing.T) {
-	n := NotesFile{Lines: []string{"line1", "line2", "line3"}}
-
-	want := 1
-	got, found := n.FindContaining("line2")
-	if got != 1 || !found {
-		t.Errorf("Wanted %d, Got %d", want, got)
+func TestFindContaining(t *testing.T) {
+	tests := []struct {
+		lines []string
+		term  string
+		index int
+		found bool
+	}{
+		{[]string{"line1", "line2", "line3"}, "line2", 1, true},
+		{[]string{"line1", "line2", "line3"}, "ne2", 1, true},
+		{[]string{"line1", "line2", "line3"}, "line5", 0, false},
 	}
 
-	got, _ = n.FindContaining("ne2")
-	if got != 1 || !found {
-		t.Errorf("Wanted %d, Got %d", want, got)
-	}
-
-	_, found = n.FindContaining("line5")
-	if found {
-		t.Error("Wanted false, Got true")
+	for _, tt := range tests {
+		n := NotesFile{Lines: tt.lines}
+		if index, found := n.FindContains(tt.term); index != tt.index || found != tt.found {
+			t.Errorf("n.FindContains(%q) = (%d, %t) want (%d, %t)", tt.term, index, found, tt.index, tt.found)
+		}
 	}
 }
 

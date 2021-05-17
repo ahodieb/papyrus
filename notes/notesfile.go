@@ -64,7 +64,7 @@ func insertString(dst []string, index int, s ...string) []string {
 }
 
 // Find line containing specified substring
-func (n *NotesFile) FindContaining(s string) (int, bool) {
+func (n *NotesFile) FindContains(s string) (int, bool) {
 	var finder LineFinder = func(line string) bool { return strings.Contains(line, s) }
 	return n.Find(finder)
 }
