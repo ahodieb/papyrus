@@ -27,37 +27,73 @@ func TestReadFromFile(t *testing.T) {
 	}
 }
 
-func TestSaveWithBackup(t *testing.T) {
-	n := NotesFile{
-		Path:  path.Join(t.TempDir(), "notes-file.txt"),
-		Lines: []string{"line1", "line2"},
+func TestBackup(t *testing.T) {
+	tests := []NotesFile{
+		ReadFromFile(tmpFileWithContent(t, "line1", "line2")),
+		ReadFromFile("does-not-exist"),
 	}
 
-	bkp, err := n.SaveWithBackup()
-	if err != nil {
-		t.Error(err)
+	for _, tt := range tests {
+		bkp, err := tt.Backup()
+		if err != nil {
+			t.Fatal(err)
+		}
+		compareFiles(t, tt.Path, bkp)
 	}
-
-	want := "line1\nline2\n"
-	got, _ := os.ReadFile(n.Path)
-
-	if string(got) != want {
-		t.Errorf("Wanted %q, Got %q", want, got)
-	}
-
-	compareFiles(t, n.Path, bkp)
 }
 
-func TestBackup(t *testing.T) {
-	want := []string{"line1", "line2"}
-	path := tmpFileWithContent(t, want...)
-	note := ReadFromFile(path)
-	bkp, err := note.Backup()
-	if err != nil {
-		t.Fatal(err)
+func TestSave(t *testing.T) {
+	tests := []struct {
+		n       NotesFile
+		changes []string
+	}{
+		{ReadFromFile(tmpFileWithContent(t, "line1", "line2")), []string{"line1", "line2", "line3"}},
+		{NotesFile{Path: path.Join(t.TempDir(), "does-not-exist")}, []string{"line1"}},
 	}
 
-	compareFiles(t, note.Path, bkp)
+	for _, tt := range tests {
+		tt.n.Lines = tt.changes
+		if err := tt.n.Save(); err != nil {
+			t.Error(err)
+		}
+
+		saved := ReadFromFile(tt.n.Path)
+		if !reflect.DeepEqual(saved.Lines, tt.changes) {
+			t.Errorf("Saved lines: %v, want %v", saved.Lines, tt.changes)
+		}
+	}
+}
+
+func TestSaveWithBackup(t *testing.T) {
+	tests := []struct {
+		n       NotesFile
+		changes []string
+	}{
+		{ReadFromFile(tmpFileWithContent(t, "line1", "line2")), []string{"line1", "line2", "line3"}},
+		{NotesFile{Path: path.Join(t.TempDir(), "does-not-exist")}, []string{"line1"}},
+	}
+
+	for _, tt := range tests {
+		original := tt.n.Lines
+		tt.n.Lines = tt.changes
+		bkp, err := tt.n.SaveWithBackup()
+		if err != nil {
+			t.Error(err)
+		}
+
+		saved := ReadFromFile(tt.n.Path)
+		if !reflect.DeepEqual(saved.Lines, tt.changes) {
+			t.Errorf("Saved lines: %v, want %v", saved.Lines, tt.changes)
+		}
+
+		if bkp != "" {
+			backup := ReadFromFile(bkp)
+			if !reflect.DeepEqual(backup.Lines, original) {
+				t.Errorf("Backup for %q: %v, want %v", tt.n.Path, backup.Lines, original)
+			}
+		}
+
+	}
 }
 
 func TestFindContaining(t *testing.T) {
@@ -129,6 +165,10 @@ func tmpFileWithContent(t *testing.T, content ...string) string {
 }
 
 func compareFiles(t *testing.T, f1 string, f2 string) {
+	if isNotExist(f1) && isNotExist(f2) {
+		return
+	}
+
 	b1, err := os.ReadFile(f1)
 	if err != nil {
 		t.Fatalf("Failed to read %q, %v", f1, err)
@@ -142,4 +182,11 @@ func compareFiles(t *testing.T, f1 string, f2 string) {
 	if !bytes.Equal(b1, b2) {
 		t.Errorf("Contens of %q and %q are different\n%q\n%q", f1, f2, b1, b2)
 	}
+}
+
+func isNotExist(p string) bool {
+	if _, err := os.Stat(p); os.IsNotExist(err) {
+		return true
+	}
+	return false
 }
