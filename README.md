@@ -1,4 +1,7 @@
-![Papyrus](papyrus.png)
+
+<p align="center">
+  <img width="250" src="papyrus.png">
+</p>
 
 # Papyrus
 
@@ -6,7 +9,9 @@ Note taking cli tools that i use daily to keep track of my work
 
 ## Acknowledgments
 
-* [[Papyrus icon](https://www.flaticon.com/free-icon/papyrus_3068712)] by: [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
+* [Papyrus icon](https://www.flaticon.com/free-icon/papyrus_3068712) by: [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
+
+---
 
 ## TODO
 
