@@ -4,20 +4,11 @@
 
 Note taking cli tools that i use daily to keep track of my work
 
+## Acknowledgments
+
+* [[Papyrus icon](https://www.flaticon.com/free-icon/papyrus_3068712)] by: [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
+
 ## TODO
-
-### Go implementation
-
-* [x] port the testing suite
-* [x] Implement the time format logic
-* [x] Implement the find position methods
-* [x] Implement backup logic
-* [x] Configure viper/defaults to get journal file and editor from config or env variables
-* [x] Install papyrus binary into bin instead of the python one
-* [x] Wire the root command to open notes
-* [x] Implement add new section logic
-  * [x] Write tests
-  * [x] Fix issue
 
 ### New Features
 
@@ -46,6 +37,7 @@ Note taking cli tools that i use daily to keep track of my work
 
 * [ ] Make script
 * [ ] Refactor Cli and possibly find a better approach than static/global variables
+* [ ] Use git for managing backups instead of backup logic
 
 ### Backwards compatibility
 
