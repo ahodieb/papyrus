@@ -2,6 +2,7 @@ package notes
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -27,17 +28,25 @@ func (m *Manager) Open(i int) error {
 
 // AddEntry to notes and return its position
 // FIXME still not working properly
-func (m *Manager) AddEntry(title string, t time.Time) int {
+// TODO restructure
+func (m *Manager) AddEntry(title string, t time.Time) (position int) {
 	if _, found := m.findOn(t); !found {
-		m.Notes.Insert([]string{"", formatDate(t), ""}, m.findLatest(t))
+		latest, _ := m.findBefore(t)
+		latest = m.Notes.Insert([]string{formatDate(t), ""}, latest)
+		position = m.Notes.Insert([]string{formatEntry(title, t)}, latest)
+	} else {
+		position = m.Notes.Insert([]string{formatEntry(title, t)}, m.findLatest(t)+1)
 	}
 
-	position := m.Notes.Insert([]string{formatEntry(title, t)}, m.findLatest(t)+1)
+	if position < len(m.Notes.Lines) && m.Notes.Lines[position] != "" {
+		m.Notes.Insert([]string{""}, position)
+	}
+
 	if _, err := m.Notes.SaveWithBackup(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "Backup failed: %s", err)
 	}
 
-	return position
+	return
 }
 
 // findLatest finds the latest entry in the notes

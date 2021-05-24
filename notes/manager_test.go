@@ -4,6 +4,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 var ReferenceNote = `
@@ -41,7 +44,7 @@ If i can only do 1 thing today it would be: Watch new episode of the madisonian
   * Conclusions: 
     * Frodo volunteered, he's the ring bearer
 `
-var TestNote = NotesFile{Lines: strings.Split(ReferenceNote, "\n")}
+var TestNote = FromText(ReferenceNote)
 
 type FindResult struct {
 	index int
@@ -116,19 +119,101 @@ func TestDatePattern(t *testing.T) {
 	}
 }
 
-// func TestFormatEntry(t *testing.T) {
-// 	start := time.Date(2021, 5, 12, 10, 13, 0, 0, time.UTC)
-// 	end := time.Date(2021, 5, 12, 19, 55, 0, 0, time.UTC)
+var AddEntryTests = []struct {
+	text    string
+	title   string
+	time    time.Time
+	newText string
+	index   int
+}{
+	{
+		title: "First entry in an empty file",
+		time:  time.Date(2021, 5, 14, 0, 0, 0, 0, time.UTC),
+		index: 3,
+		text:  "",
+		newText: `### Fri 2021/05/14
 
-// 	got := formatEntry("title", start)
-// 	want := "title | 10:13/"
-// 	if got != want {
-// 		t.Errorf("Got %s wanted %s", got, want)
-// 	}
+* First entry in an empty file | 00:00/`,
+	},
+	{
+		title: "First entry in a new day",
+		time:  time.Date(2021, 5, 17, 11, 15, 0, 0, time.UTC),
+		index: 10,
+		text: `
+## Today
 
-// 	got = formatCompleteEntry("title", start, end)
-// 	want = "title | 10:13/19:55"
-// 	if got != want {
-// 		t.Errorf("Got %s wanted %s", got, want)
-// 	}
-// }
+If i can only do 1 thing today it would be: Watch new episode of the madisonian
+
+---
+
+### Fri 2021/05/14
+
+* #code Write a program to randomly select where to eat | 11:15/11:45
+  * Call API to pull lists of food places
+`,
+		newText: `
+## Today
+
+If i can only do 1 thing today it would be: Watch new episode of the madisonian
+
+---
+
+### Mon 2021/05/17
+
+* First entry in a new day | 11:15/
+
+### Fri 2021/05/14
+
+* #code Write a program to randomly select where to eat | 11:15/11:45
+  * Call API to pull lists of food places
+`,
+	},
+	{
+		title: "Second entry in same day",
+		time:  time.Date(2021, 5, 14, 12, 30, 0, 0, time.UTC),
+		index: 11,
+		text: `
+## Today
+
+If i can only do 1 thing today it would be: Watch new episode of the madisonian
+
+---
+
+### Fri 2021/05/14
+
+* First entry | 11:15/11:45`,
+		newText: `
+## Today
+
+If i can only do 1 thing today it would be: Watch new episode of the madisonian
+
+---
+
+### Fri 2021/05/14
+
+* First entry | 11:15/11:45
+* Second entry in same day | 12:30/`,
+	},
+}
+
+func TestAddEntry(t *testing.T) {
+
+	split := cmpopts.AcyclicTransformer("Lines", func(s string) []string {
+		return strings.Split(s, "\n")
+	})
+
+	for _, tt := range AddEntryTests {
+		m := Manager{Notes: FromText(tt.text)}
+		index := m.AddEntry(tt.title, tt.time)
+		diff := cmp.Diff(tt.newText, m.Notes.String(), split)
+
+		if index != tt.index {
+			t.Errorf("m.AddEntry(%q, %v) = (%d) want (%d)\n%s", tt.title, tt.time, index, tt.index, m.Notes.StringWithLineNumbers())
+		}
+
+		if diff != "" {
+			t.Errorf("m.AddEntry(%q, %v)\n notes content  mismatch (-want +got):\n%s\n--- Got: \n%s", tt.title, tt.time, diff, m.Notes.StringWithLineNumbers())
+
+		}
+	}
+}

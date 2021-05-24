@@ -4,7 +4,6 @@
 
 Note taking cli tools that i use daily to keep track of my work
 
-
 ## TODO
 
 ### Go implementation
@@ -16,14 +15,22 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] Configure viper/defaults to get journal file and editor from config or env variables
 * [x] Install papyrus binary into bin instead of the python one
 * [x] Wire the root command to open notes
-* [ ] Implement add new section logic
-* [ ] Make script
-* [ ] Refactor Cli and possibly find a better approach than static/global variables
+* [x] Implement add new section logic
+  * [x] Write tests
+  * [x] Fix issue
 
-### Functional Requirements
+### New Features
 
-* [ ] Wire the root command to do the auto magic detection logic
 * [ ] round time to 5 minute blocks ?
+  * [ ] New entry floor to 5 minutes
+  * [ ] closing times ceil to 5 minutes
+* [ ] Add rules for what root command does
+  * [ ] on a new day, insert a new section and open editor
+  * [ ] if same day, no args open editor
+  * [ ] if with args, add entry
+* [ ] Add time based rules
+  * [ ] configure time for catchup
+* [ ]  Can papyrus access calender ?
 * [ ] add tags automatically to words
   * [ ] extension/rules system
 * [ ] write new today sentence (today)
@@ -34,6 +41,11 @@ Note taking cli tools that i use daily to keep track of my work
 * [ ] cli runs a server to display stats, and other reports (UI)
 * [ ] check if clipboard contains a link, and add additional tags to entry (e.g. pull request link -> #pr)
   * [ ] add an option to make rules injectable so i can include private rules without adding them to the code
+
+### Tech Debt / Refactoring / Non functional Enhancements
+
+* [ ] Make script
+* [ ] Refactor Cli and possibly find a better approach than static/global variables
 
 ### Backwards compatibility
 

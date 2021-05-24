@@ -17,6 +17,15 @@ type NotesFile struct {
 }
 
 // Read notes file from path
+func FromText(txt string) NotesFile {
+	if txt == "" {
+		return NotesFile{}
+	}
+
+	return NotesFile{Lines: strings.Split(txt, "\n")}
+}
+
+// Read notes file from path
 func ReadFromFile(path string) NotesFile {
 	return NotesFile{
 		Path:  path,
@@ -144,4 +153,17 @@ func (n *NotesFile) Backup() (string, error) {
 	}
 
 	return path, nil
+}
+
+func (n *NotesFile) String() string {
+	return strings.Join(n.Lines, "\n")
+}
+
+func (n *NotesFile) StringWithLineNumbers() string {
+	var lines []string = make([]string, len(n.Lines))
+	for i, v := range n.Lines {
+		lines[i] = fmt.Sprintf("%0*d. %s", (len(n.Lines)+1)%10, i, v)
+	}
+
+	return strings.Join(lines, "\n")
 }
