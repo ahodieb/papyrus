@@ -25,11 +25,13 @@ const (
 
 var (
 	cfgFile string
+	version = "development"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   APP_NAME,
-	Short: "Tools to automate note taking workflow",
+	Use:     APP_NAME,
+	Short:   "Tools to automate note taking workflow",
+	Version: version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m := NewManager(cmd, args)
 		return m.OpenLatest()

@@ -16,7 +16,8 @@ Note taking cli tools that i use daily to keep track of my work
 ## TODO
 
 * [x] ♻️ Port to golang
-* [ ] ♻️ 🚀 Make script
+* [x] ♻️ 🚀 Make script
+* [x] 🎨 add version flag
 * [ ] ♻️ ⚡️ Use git for managing backups instead of backup logic
 * [ ] ✨ generate weekly status
 * [ ] ✨ round time for new entries to 5 minute blocks ?
