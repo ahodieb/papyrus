@@ -19,8 +19,7 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] ♻️ 🚀 Make script
 * [x] 🎨 add version flag
 * [x] 🎉 open source Papyrus
-
-* [ ] ✨ round time for new entries to 5 minute blocks ?
+* [x] ✨ round time for new entries to 5 minute blocks ?
 * [ ] ✨ generate weekly status
 * [ ] 📒 add build/development instructions ( i don't expect external contributions, but could be useful for me updating the code in 6 months)
 * [ ] ♻️ ⚡️ Use git for managing backups instead of backup logic

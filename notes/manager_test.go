@@ -217,3 +217,24 @@ func TestAddEntry(t *testing.T) {
 		}
 	}
 }
+
+func TestFloorTime(t *testing.T) {
+	tests := []struct {
+		t    time.Time
+		want time.Time
+	}{
+		{time.Date(2021, 5, 14, 0, 0, 0, 0, time.UTC), time.Date(2021, 5, 14, 0, 0, 0, 0, time.UTC)},
+		{time.Date(2021, 5, 14, 10, 0, 0, 0, time.UTC), time.Date(2021, 5, 14, 10, 0, 0, 0, time.UTC)},
+		{time.Date(2021, 5, 14, 10, 15, 0, 0, time.UTC), time.Date(2021, 5, 14, 10, 15, 0, 0, time.UTC)},
+		{time.Date(2021, 5, 14, 10, 12, 0, 0, time.UTC), time.Date(2021, 5, 14, 10, 10, 0, 0, time.UTC)},
+		{time.Date(2021, 5, 14, 10, 13, 0, 0, time.UTC), time.Date(2021, 5, 14, 10, 10, 0, 0, time.UTC)},
+		{time.Date(2021, 5, 14, 10, 17, 0, 0, time.UTC), time.Date(2021, 5, 14, 10, 15, 0, 0, time.UTC)},
+		{time.Date(2021, 5, 14, 10, 19, 0, 0, time.UTC), time.Date(2021, 5, 14, 10, 15, 0, 0, time.UTC)},
+	}
+
+	for _, tt := range tests {
+		if got := floorTime(tt.t, time.Minute*5); got != tt.want {
+			t.Errorf("floorTime(%v) = (%v) want (%v)", tt.t, got, tt.want)
+		}
+	}
+}

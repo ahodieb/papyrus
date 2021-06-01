@@ -120,6 +120,8 @@ func (m *Manager) Sections() []Section {
 
 var DATE_PATTERN, _ = regexp.Compile("### [a-zA-Z]{3} (?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})")
 
+const ROUND_DURATION = 5 * time.Minute
+
 func formatDate(t time.Time) string {
 	return t.Format("### Mon 2006/01/02")
 }
@@ -129,9 +131,13 @@ func parseDate(s string) (time.Time, error) {
 }
 
 func formatEntry(title string, start time.Time) string {
-	return fmt.Sprintf("* %s | %s/", title, start.Format("15:04"))
+	return fmt.Sprintf("* %s | %s/", title, floorTime(start, ROUND_DURATION).Format("15:04"))
 }
 
-// func formatCompleteEntry(title string, start time.Time, end time.Time) string {
-// 	return fmt.Sprintf("%s | %s/%s", title, start.Format("15:04"), end.Format("15:04"))
-// }
+func floorTime(t time.Time, d time.Duration) time.Time {
+	round := t.Round(d)
+	if round.After(t) {
+		return round.Add(-d)
+	}
+	return round
+}
