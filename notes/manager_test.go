@@ -238,3 +238,22 @@ func TestFloorTime(t *testing.T) {
 		}
 	}
 }
+
+func TestFormatEntry(t *testing.T) {
+	tests := []struct {
+		s    string
+		t    time.Time
+		want string
+	}{
+		{"", time.Date(2021, 5, 14, 10, 13, 13, 0, time.UTC), "*  | 10:10/"},
+		{"Council of Elrond", time.Date(2021, 5, 14, 10, 13, 13, 0, time.UTC), "* Council of Elrond | 10:10/"},
+		{"Council of Elrond #meeting", time.Date(2021, 5, 14, 10, 13, 13, 0, time.UTC), "* Council of Elrond #meeting | 10:10/"},
+		{"Council of Elrond meeting#", time.Date(2021, 5, 14, 10, 13, 13, 0, time.UTC), "* Council of Elrond #meeting | 10:10/"},
+	}
+
+	for _, tt := range tests {
+		if got := formatEntry(tt.s, tt.t); got != tt.want {
+			t.Errorf("formatEntry(%q, %v) = (%q) want (%q)", tt.s, tt.t, got, tt.want)
+		}
+	}
+}

@@ -131,7 +131,8 @@ func parseDate(s string) (time.Time, error) {
 }
 
 func formatEntry(title string, start time.Time) string {
-	return fmt.Sprintf("* %s | %s/", title, floorTime(start, ROUND_DURATION).Format("15:04"))
+	formatedTitle := reverseHashTags(title)
+	return fmt.Sprintf("* %s | %s/", formatedTitle, floorTime(start, ROUND_DURATION).Format("15:04"))
 }
 
 func floorTime(t time.Time, d time.Duration) time.Time {
@@ -140,4 +141,19 @@ func floorTime(t time.Time, d time.Duration) time.Time {
 		return round.Add(-d)
 	}
 	return round
+}
+
+// reverse hashtags in entry title e.g  something# ->  #something
+// creating a new entry starting with #something does not work in bash without escaping it
+// as a convince i reverse them something# which works fine on bash
+func reverseHashTags(s string) string {
+	w := strings.Split(s, " ")
+
+	for i := range w {
+		if strings.HasSuffix(w[i], "#") {
+			w[i] = "#" + strings.TrimSuffix(w[i], "#")
+		}
+	}
+
+	return strings.Join(w, " ")
 }

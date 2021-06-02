@@ -21,7 +21,7 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] 🎉 open source Papyrus
 * [x] ✨ round time for new entries to 5 minute blocks ?
 * [x] 📒 add build/development instructions ( i don't expect external contributions, but could be useful for me updating the code in 6 months)
-* [ ] ✨ auto fix reverse tags "meeting# -> #meeting"
+* [x] ✨ auto fix reverse tags "meeting# -> #meeting"
 * [ ] ✨ add tags automatically to words
 * [ ] ✨ auto close off the past entry timestamp
 * [ ] ✨ papyrus fmt
