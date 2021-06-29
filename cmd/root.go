@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ahodieb/papyrus/editor"
 	"github.com/ahodieb/papyrus/notes"
@@ -33,7 +34,16 @@ var rootCmd = &cobra.Command{
 	Short:   "Tools to automate note taking workflow",
 	Version: version,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		now := time.Now()
 		m := NewManager(cmd, args)
+		_, todayExists := m.FindOn(now)
+
+		if !todayExists {
+			i := m.AddEntry("", now)
+			m.Open(i)
+			return nil
+		}
+
 		return m.OpenLatest()
 	},
 }

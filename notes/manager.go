@@ -30,7 +30,7 @@ func (m *Manager) Open(i int) error {
 // FIXME still not working properly
 // TODO restructure
 func (m *Manager) AddEntry(title string, t time.Time) (position int) {
-	if _, found := m.findOn(t); !found {
+	if _, found := m.FindOn(t); !found {
 		latest, _ := m.findBefore(t)
 		latest = m.Notes.Insert([]string{formatDate(t), ""}, latest)
 		position = m.Notes.Insert([]string{formatEntry(title, t)}, latest)
@@ -67,9 +67,9 @@ func (m *Manager) findLatest(t time.Time) int {
 	return len(m.Notes.Lines) - 1
 }
 
-// findOn finds section created on the specified date
+// FindOn finds section created on the specified date
 // returns the index and a found bool
-func (m *Manager) findOn(t time.Time) (int, bool) {
+func (m *Manager) FindOn(t time.Time) (int, bool) {
 	return m.Notes.FindContains(formatDate(t))
 }
 

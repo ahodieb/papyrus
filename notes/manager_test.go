@@ -64,7 +64,7 @@ func TestFindOn(t *testing.T) {
 	}
 	m := Manager{Notes: TestNote}
 	for _, tt := range tests {
-		if index, found := m.findOn(tt.time); index != tt.want.index || found != tt.want.found {
+		if index, found := m.FindOn(tt.time); index != tt.want.index || found != tt.want.found {
 			t.Errorf("n.findOn(%v) = (%d, %t) want (%d, %t)", tt.time, index, found, tt.want.index, tt.want.found)
 		}
 	}
