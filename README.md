@@ -24,6 +24,7 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] ✨ auto fix reverse tags "meeting# -> #meeting"
 * [x] ✨ root command on a new day, inserts a new section and open editor
 * [x] ✨ root command on a same day no args, opens editor
+* [ ] ✨ Change the template of the new day entry to include If only section , maybe a todo section too ?
 * [ ] ✨ generate weekly status
 * [ ] ♻️ ⚡️ Use git for managing backups instead of backup logic
 * [ ] ✨ add tags automatically to words
