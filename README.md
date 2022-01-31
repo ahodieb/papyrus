@@ -21,9 +21,7 @@ Note taking cli tools that i use daily to keep track of my work
 * [x] 🎉 open source Papyrus
 * [x] ✨ round time for new entries to 5 minute blocks ?
 * [x] 📒 add build/development instructions ( i don't expect external contributions, but could be useful for me updating the code in 6 months)
-* [x] ✨ auto fix reverse tags "meeting# -> #meeting"
-* [x] ✨ root command on a new day, inserts a new section and open editor
-* [x] ✨ root command on a same day no args, opens editor
+* [x] ✨ auto fix reverse tags "meeting# -> #meeting"q:
 * [ ] ✨ Change the template of the new day entry to include If only section , maybe a todo section too ?
 * [ ] ✨ generate weekly status
 * [ ] ♻️ ⚡️ Use git for managing backups instead of backup logic
@@ -38,9 +36,6 @@ Note taking cli tools that i use daily to keep track of my work
 * [ ] ✨ generate breakdown report for time spent
 * [ ] ✨ reminder to add entry to the journal
 * [ ] ✨ cli runs a server to display stats, and other reports (UI)
-* [ ] ♻️ 🎨 Reformat my old journals into new format
-* [ ] ♻️ 🎨 Import notes from one-note
-* [ ] ♻️ 🎨 Import notes from quip
 * [ ] 📒 add documentation, usage, description for the project
 * [ ] 📒 write a blog post to share with others ("this is how i manage my notes")
 * [ ] 📒 add setup instructions ( if needed i'm already covered by setup-mac.sh )
