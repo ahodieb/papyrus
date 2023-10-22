@@ -7,39 +7,47 @@ import (
 	"strings"
 )
 
-var defaultEditor = Vim // TODO configuration
-
-type EditorOpener interface {
-	Open(path string, position int) error
-}
-
-type EditorOpenerFunc func(path string, position int) error
-
-func (e EditorOpenerFunc) Open(path string, position int) error {
-	return e(path, position)
-}
-
-var VSCode EditorOpenerFunc = func(path string, position int) error {
+var VSCode OpenerFunc = func(path string, position int) error {
 	return open("code", "--g", fmt.Sprintf("%s:%d", path, position))
 }
 
-var Vim EditorOpenerFunc = func(path string, position int) error {
+var Vim OpenerFunc = func(path string, position int) error {
 	return open("vim", fmt.Sprintf("+%d", position), path)
 }
 
-func ByName(name string) EditorOpener {
+var Neovim OpenerFunc = func(path string, position int) error {
+	return open("nvim", fmt.Sprintf("+%d", position), path)
+}
 
-	n := strings.ToLower(name)
+var Neovide OpenerFunc = func(path string, position int) error {
+	return open("neovide", fmt.Sprintf("+%d", position), path)
+}
 
-	if n == "vim" {
+var DefaultEditor = Vim
+
+type Opener interface {
+	Open(path string, position int) error
+}
+
+type OpenerFunc func(path string, position int) error
+
+func (e OpenerFunc) Open(path string, position int) error {
+	return e(path, position)
+}
+
+func ByName(name string) Opener {
+	switch strings.ToLower(name) {
+	case "vim":
 		return Vim
-	}
-
-	if n == "vscode" || n == "code" {
+	case "nvim":
+		return Neovim
+	case "vscode":
 		return VSCode
+	case "neovide":
+		return Neovide
+	default:
+		return DefaultEditor
 	}
-
-	return defaultEditor
 }
 
 func open(name string, arg ...string) error {

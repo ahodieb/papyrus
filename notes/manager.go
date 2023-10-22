@@ -13,7 +13,7 @@ import (
 
 type Manager struct {
 	Notes  NotesFile
-	Editor editor.EditorOpener
+	Editor editor.Opener
 }
 
 // Open notes file in the editor at the end of the latest time entry
@@ -90,7 +90,7 @@ type Section struct {
 	Content []string
 }
 
-//FIXME It does not account for other sections in the journal file
+// FIXME It does not account for other sections in the journal file
 // Also i want to think about the terminology (section, entry, ...etc)
 func (m *Manager) Sections() []Section {
 	var sections []Section
