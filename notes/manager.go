@@ -21,6 +21,19 @@ func (m *Manager) OpenLatest() error {
 	return m.Editor.Open(m.Notes.Path, m.findLatest(time.Now()))
 }
 
+// Open notes file in the editor at the end of the latest time entry
+// Creates an entry if no entry was found for today
+func (m *Manager) OpenOrCreateLatest() error {
+	now := time.Now()
+
+	if _, found := m.FindOn(now); !found {
+		i := m.AddEntry("", now)
+		return m.Open(i)
+	}
+
+	return m.OpenLatest()
+}
+
 // Open opens notes file in the editor at the specified line index
 func (m *Manager) Open(i int) error {
 	return m.Editor.Open(m.Notes.Path, i)

@@ -21,7 +21,7 @@ func Run() {
 
 	// Default action:
 	// Open the notes file at the latest position
-	err := m.OpenLatest()
+	err := m.OpenOrCreateLatest()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
