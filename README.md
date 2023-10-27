@@ -21,7 +21,7 @@ Note taking cli tools that i use daily to keep track of my work
 * [ ] Install using brew
 * [ ] Github action to build new versions
 * [ ] 📒 add documentation, usage, description for the project
-* [ ] Add documentation website/page .. (mkdocs sounds reasoable)
+* [ ] Add documentation website/page .. (mkdocs sounds reasonable)
 * [ ] ♻️ ⚡️ Use git for managing backups instead of backup logic
 
 * [ ] ✨ Change the template of the new day entry to include If only section , maybe a todo section too ?
