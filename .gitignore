@@ -2,3 +2,5 @@ papyrus
 notes.txt
 .backups
 bin
+.idea
+.vscode
