@@ -114,7 +114,7 @@ func TestFormatDate(t *testing.T) {
 }
 
 func TestDatePattern(t *testing.T) {
-	if !DATE_PATTERN.MatchString("### Wed 2021/05/12") {
+	if !DatePattern.MatchString("### Wed 2021/05/12") {
 		t.Error("Pattern does not match line")
 	}
 }

@@ -16,12 +16,12 @@ type Manager struct {
 	Editor editor.Opener
 }
 
-// Open notes file in the editor at the end of the latest time entry
+// OpenLatest opens the notes file in the editor at the end of the latest time entry
 func (m *Manager) OpenLatest() error {
 	return m.Editor.Open(m.Notes.Path, m.findLatest(time.Now()))
 }
 
-// Open notes file in the editor at the end of the latest time entry
+// OpenOrCreateLatest opens the notes file in the editor at the end of the latest time entry
 // Creates an entry if no entry was found for today
 func (m *Manager) OpenOrCreateLatest() error {
 	now := time.Now()
@@ -56,7 +56,7 @@ func (m *Manager) AddEntry(title string, t time.Time) (position int) {
 	}
 
 	if _, err := m.Notes.SaveWithBackup(); err != nil {
-		fmt.Fprintf(os.Stderr, "Backup failed: %s", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Backup failed: %s", err)
 	}
 
 	return
@@ -75,7 +75,7 @@ func (m *Manager) findLatest(t time.Time) int {
 
 	// If no later entry found look for the current day entry,
 	// This could happen if there is only one entry in the file, or change of formats
-	// If none were found that means either its an empty file or formats are not recognized
+	// If none were found that means either it's an empty file or formats are not recognized,
 	// and it will default back to the 0th position
 	return len(m.Notes.Lines) - 1
 }
@@ -103,13 +103,14 @@ type Section struct {
 	Content []string
 }
 
-// FIXME It does not account for other sections in the journal file
-// Also i want to think about the terminology (section, entry, ...etc)
+// Sections returns the different sections in the notes document
+// FIXME: It does not account for other sections in the journal file
+// TODO: think about the terminology (section, entry, ...etc)
 func (m *Manager) Sections() []Section {
 	var sections []Section
 
 	for i, line := range m.Notes.Lines {
-		if DATE_PATTERN.MatchString(line) {
+		if DatePattern.MatchString(line) {
 			t, err := parseDate(line)
 			if err == nil {
 				sections = append(sections, Section{Index: i, Time: t})
@@ -131,9 +132,9 @@ func (m *Manager) Sections() []Section {
 	return sections
 }
 
-var DATE_PATTERN, _ = regexp.Compile("### [a-zA-Z]{3} (?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})")
+var DatePattern, _ = regexp.Compile("### [a-zA-Z]{3} (?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})")
 
-const ROUND_DURATION = 5 * time.Minute
+const RoundDuration = 5 * time.Minute
 
 func formatDate(t time.Time) string {
 	return t.Format("### Mon 2006/01/02")
@@ -144,8 +145,8 @@ func parseDate(s string) (time.Time, error) {
 }
 
 func formatEntry(title string, start time.Time) string {
-	formatedTitle := reverseHashTags(title)
-	return fmt.Sprintf("* %s | %s/", formatedTitle, floorTime(start, ROUND_DURATION).Format("15:04"))
+	formattedTitle := reverseHashTags(title)
+	return fmt.Sprintf("* %s | %s/", formattedTitle, floorTime(start, RoundDuration).Format("15:04"))
 }
 
 func floorTime(t time.Time, d time.Duration) time.Time {
@@ -156,9 +157,9 @@ func floorTime(t time.Time, d time.Duration) time.Time {
 	return round
 }
 
-// reverse hashtags in entry title e.g  something# ->  #something
+// reverse hashtags in entry title e.g.  something# ->  #something
 // creating a new entry starting with #something does not work in bash without escaping it
-// as a convince i reverse them something# which works fine on bash
+// as a convince I reverse them something# which works fine on bash
 func reverseHashTags(s string) string {
 	w := strings.Split(s, " ")
 
