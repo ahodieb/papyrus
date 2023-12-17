@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ahodieb/papyrus/server"
 	"os"
 	"strings"
 	"time"
@@ -33,6 +34,9 @@ func Run() {
 	}
 
 	switch args[0] {
+	case "server":
+		server.New(&m).ListenAndServe()
+
 	default:
 		p := m.AddEntry(strings.Join(args, " "), time.Now())
 		err := m.Open(p)
