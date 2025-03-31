@@ -14,7 +14,7 @@ const (
 	AppName = "papyrus"
 )
 
-func Run() {
+func Run() error {
 	cfg := LoadConfig()
 	m := notes.Manager{
 		Editor: editor.ByName(cfg.Editor),
@@ -25,20 +25,12 @@ func Run() {
 	if len(args) == 0 {
 		// Default action:
 		// Open the notes file at the latest position
-		err := m.OpenOrCreateLatest()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+		return m.OpenOrCreateLatest()
 	}
 
 	switch args[0] {
 	default:
 		p := m.AddEntry(strings.Join(args, " "), time.Now())
-		err := m.Open(p)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+		return m.Open(p)
 	}
 }

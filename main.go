@@ -1,7 +1,14 @@
 package main
 
-import "github.com/ahodieb/papyrus/cmd"
+import (
+	"fmt"
+	"github.com/ahodieb/papyrus/cmd"
+	"os"
+)
 
 func main() {
-	cmd.Run()
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

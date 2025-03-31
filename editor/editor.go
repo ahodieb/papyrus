@@ -54,5 +54,7 @@ func open(name string, arg ...string) error {
 	cmd := exec.Command(name, arg...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
+	//out, err := cmd.CombinedOutput()
+	//fmt.Println(string(out))
 	return cmd.Run()
 }
