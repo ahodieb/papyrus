@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/ahodieb/papyrus/events"
 	"os"
 	"strings"
 	"time"
@@ -29,6 +29,10 @@ func Run() error {
 	}
 
 	switch args[0] {
+	case "q":
+		fallthrough
+	case "quick":
+		return events.NewEvent(cfg.EventsFile)
 	default:
 		p := m.AddEntry(strings.Join(args, " "), time.Now())
 		return m.Open(p)

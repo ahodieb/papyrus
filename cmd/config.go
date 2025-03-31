@@ -3,19 +3,22 @@ package cmd
 import "os"
 
 type Config struct {
-	File   string
-	Editor string
+	File       string
+	EventsFile string
+	Editor     string
 }
 
 const (
-	DefaultFile   = "~/notes.txt"
-	DefaultEditor = "vim"
+	DefaultFile       = "~/notes.txt"
+	DefaultEventsFile = "~/events.txt"
+	DefaultEditor     = "vim"
 )
 
 func LoadConfig() Config {
 	return Config{
-		File:   GetEnvOrDefault("NOTES", DefaultFile),
-		Editor: GetEnvOrDefault("EDITOR", DefaultEditor),
+		File:       GetEnvOrDefault("NOTES", DefaultFile),
+		EventsFile: GetEnvOrDefault("EVENTS", DefaultEventsFile),
+		Editor:     GetEnvOrDefault("EDITOR", DefaultEditor),
 	}
 }
 

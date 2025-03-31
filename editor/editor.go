@@ -23,6 +23,17 @@ var Neovide OpenerFunc = func(path string, position int) error {
 	return open("neovide", fmt.Sprintf("+%d", position), path)
 }
 
+var NeovidePrompt OpenerFunc = func(path string, position int) error {
+	return open(
+		"neovide",
+		"--frame=buttonless",
+		"--geometry=80x12",
+		fmt.Sprintf("+%d", position),
+		"\"-- -c 'startinsert'\"",
+		path,
+	)
+}
+
 var DefaultEditor = Vim
 
 type Opener interface {
