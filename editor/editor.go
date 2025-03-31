@@ -20,7 +20,7 @@ var Neovim OpenerFunc = func(path string, position int) error {
 }
 
 var Neovide OpenerFunc = func(path string, position int) error {
-	return open("neovide", fmt.Sprintf("+%d", position), path)
+	return open("neovide", "--fork", fmt.Sprintf("+%d", position), path)
 }
 
 var DefaultEditor = Vim
